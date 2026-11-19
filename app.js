@@ -56,7 +56,7 @@
   var EMBED = window.ARCHIVE_EMBED || null;
   var FILE_MODE = (typeof location !== "undefined" && location.protocol === "file:");
   function assetSrc(file) {
-    if (EMBED && EMBED[file]) return EMBED[file];
+    if (FILE_MODE && EMBED && EMBED[file]) return EMBED[file];
     return file;
   }
   function loadImage(src) {

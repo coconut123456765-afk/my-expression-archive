@@ -180,7 +180,13 @@
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script src="data/characters.js"></script>
-<script src="data/assets-embed.js"></script>
+<script>
+  /* file:// 로 더블클릭해 열었을 때만 내장 이미지 사본(약 4.7MB)을 읽습니다.
+     http(s) 로 열면 assets/ 의 원본 PNG 를 그대로 사용합니다. */
+  if (location.protocol === "file:") {
+    document.write('<script src="data/assets-embed.js"><\/script>');
+  }
+</script>
 <script src="app.js"></script>
 </body>
 </html>
