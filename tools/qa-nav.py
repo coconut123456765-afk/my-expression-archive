@@ -14,6 +14,8 @@ from playwright.sync_api import sync_playwright
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SHOTS = sys.argv[1] if len(sys.argv) > 1 else "/tmp"
+# 라이브 주소로도 같은 검사를 돌릴 수 있다:  QA_URL=https://… python3 tools/qa-nav.py
+LIVE = os.environ.get("QA_URL")
 
 
 class Handler(http.server.SimpleHTTPRequestHandler):
@@ -28,6 +30,7 @@ socketserver.TCPServer.allow_reuse_address = True
 httpd = socketserver.TCPServer(("127.0.0.1", 0), Handler)
 PORT = httpd.server_address[1]
 threading.Thread(target=httpd.serve_forever, daemon=True).start()
+BASE = LIVE or f"http://127.0.0.1:{PORT}/"
 
 STATE = """() => ({
   screen: document.body.dataset.screen,
@@ -48,7 +51,7 @@ def run(browser, vp, label, out):
     page.on("console", lambda m: errors.append((m.type, m.text)) if m.type == "error" else None)
     page.on("pageerror", lambda e: errors.append(("pageerror", str(e))))
     page.on("requestfailed", lambda r: errors.append(("requestfailed", r.url)))
-    page.goto(f"http://127.0.0.1:{PORT}/index.html", wait_until="load")
+    page.goto(BASE + "index.html", wait_until="load")
     page.wait_for_timeout(700)
 
     bad = []
