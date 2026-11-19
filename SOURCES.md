@@ -229,8 +229,8 @@ curl -o puchi_200117.png https://hidamarirhodonite.kirara.ca/puchi/200117.png   
 curl -o sign_200117.png  https://hidamarirhodonite.kirara.ca/sign/200117.png    # 자필 사인
 ```
 
-- 푸치는 원본이 **112×184 안팎의 아주 작은 PNG** 라서, 화면에서 뭉개지지 않도록 **3배(×3) LANCZOS 업스케일** 후 저장했습니다(파일 크기는 그대로 작음). `data/characters.json` 의 `w`·`h` 는 업스케일된 값입니다.
-- 사인은 9장만 존재합니다(모든 카드에 있는 것은 아님).
+- 푸치는 원본이 **112×184 안팎의 아주 작은 PNG** 입니다. v4 에서는 3배로 늘려 저장했지만 정보가 늘지 않는 가짜 해상도라, v5 에서 **원본 크기 그대로** 저장했습니다.
+- 사인은 카드 9장분이 있는데 **디자인이 사실상 한 가지**(획만 미세하게 다른 3가지 변형)입니다. v4 의 9컷은 중복이라 v5 에서 **2컷**(`50-sign` = 카드 200117, `51-sign-premium` = 카드 200617)만 남겼습니다.
 
 ### 8-2. 돈키호테 인격 · E.G.O (Limbus Company Wiki)
 
@@ -261,26 +261,34 @@ curl -o lobby.png "https://static.wikitide.net/bluearchivewiki/1/18/Lobbyillust_
 - `aru` / `aru_newyear` / `CH0240` 폴더는 0~99 번호 + `Idle_01` · `Eye_Close_01` 구성입니다. `99`·`Eye_Close_01` 은 앞 번호와 겹쳐서 수록하지 않았습니다.
 - 전신은 SchaleDB `https://schaledb.com/images/student/portrait/{10000|10031|10089}.webp` (614×1024 ~ 724×1312, 투명) 를 써도 됩니다. 메모리얼 로비는 Wiki 의 `Lobbyillust_*.png` (304×240) 이 가장 큰 공개본입니다.
 
-### 8-4. 아니스 표정 캡처 (스파인 렌더)
+### 8-4. 아니스 스파인 렌더 (v5 — WebGL)
 
-NIKKE 모델은 **Spine** 이고, 표정은 `idle · angry · delight · shy · sad · worry · no · rage · pain · special · void` 같은 **애니메이션 이름**으로 들어 있습니다.
-nikke-db 의 Live2D Visualiser 는 WebGL 캔버스라 스크린샷에 배경이 섞이므로, 모델 파일을 직접 받아 **로컬에서 렌더**했습니다.
+NIKKE 모델은 **Spine** 이고, 표정은 `idle · angry · delight · shy · sad · worry · no · rage · pain · special · void` 같은
+**애니메이션 이름**으로 들어 있습니다. 표정은 **슬롯의 어태치먼트 교체**(예: `Idle_eyeball_l1` → `Angry_eyeball_l1`)로
+이루어지므로, 애니메이션을 적용한 뒤 반드시 `state.apply(skeleton)` 을 불러야 얼굴이 바뀝니다. (이걸 빼면 26컷이 전부 같은 얼굴이 됩니다.)
 
 ```bash
-# 스파인 자산 (c9021=기본, c015=스파클링 서머, c017=스타, c017_01=스타 스타라이트)
-curl -o c017.skel  https://nikke-db-legacy.pages.dev/l2d/c017/c017_00.skel
-curl -o c017.atlas https://nikke-db-legacy.pages.dev/l2d/c017/c017_00.atlas
-curl -o c017_00.png https://nikke-db-legacy.pages.dev/l2d/c017/c017_00.png
+# 복장별 스파인 자산 (nikke-db)
+#   c012 기본 전투복 · c9021 사복 · c015 스파클링 서머 · c017 스타 · c017_01 스타라이트
+for m in c012 c9021 c015 c017 c017_01; do
+  curl -o $m.skel  "https://nikke-db-legacy.pages.dev/l2d/$m/${m}_00.skel"
+  curl -o $m.atlas "https://nikke-db-legacy.pages.dev/l2d/$m/${m}_00.atlas"
+  curl -o $m.png   "https://nikke-db-legacy.pages.dev/l2d/$m/${m}.png"   # 아틀라스 페이지 이름과 같게
+done
 ```
 
-1. 아틀라스가 **premultiplied alpha(`pma:true`)** 라서, PNG 를 한 번 **언프리멀티플라이**(`rgb * 255 / a`)하고 아틀라스의 페이지 이름을 바꿔 둡니다. 그대로 그리면 살색 경계에 회색 이음선이 남습니다.
-2. `@esotericsoftware/spine-canvas@4.1.0` 의 IIFE 빌드를 브라우저에 올리고 `new spine.AssetManager('')` → `loadTextureAtlas` → `loadBinary`.
-3. `new spine.SkeletonRenderer(ctx)` 에 `triangleRendering = true` 를 주고 `AnimationState.setAnimation(0, 'angry', false)` → `update(1.6)` → `draw(skeleton)`.
-4. 삼각형 클립 경계에 1px 틈이 생기므로 `drawTriangle` 을 살짝 확장(0.9px)한 클립으로 덮어 그렸습니다. (uv 에 `img.width/height` 를 곱하는 것과, `x1-x0` 델타로 아핀을 계산하는 것을 놓치면 그림이 깨집니다.)
-5. 캔버스는 900×1100, 배경은 `clearRect` 로 완전 투명. `canvas.toDataURL('image/png')` 로 바로 저장.
+1. **데이터 버전을 맞춘다** — `c012.skel` 은 **4.0.47**, 나머지는 **4.1.20** 입니다. 4.0 데이터를 4.1 런타임으로 읽으면
+   `Region not found` 로 실패합니다(이전에 기본 아니스가 빠진 이유). → `@esotericsoftware/spine-webgl@4.0.x` / `4.1.x` 를 각각 씁니다.
+2. **Canvas2D 대신 WebGL** — `spine-canvas` 의 삼각형 클립 렌더러는 uv 오프셋이 어긋나 아틀라스의 엉뚱한 영역을 그립니다(회색 사각형 잔여물).
+   `spine-webgl` 의 `SceneRenderer` + `PolygonBatcher` 는 GPU 래스터라이즈라 메시 경계에 틈·이음선이 생기지 않습니다.
+3. 아틀라스가 **premultiplied alpha(`pma:true`)** 이므로 `renderer.drawSkeleton(skeleton, true)` 로 그리고,
+   `gl.readPixels` 결과(프리멀티플라이드)를 저장 전에 **언프리멀티플라이**(`rgb / alpha`)해야 흰 테두리·검은 테두리가 남지 않습니다.
+4. 캠버스는 `clearColor(0,0,0,0)` 로 완전 투명. 전신은 모델 바운드에 맞춰 auto-fit(높이 1600px),
+   표정은 머리 위치를 기준으로 시야 높이를 고정해 900×900 버스트로 뽑습니다.
+5. `pma` 가 켜진 채로 알파를 다시 곱하면 어두워지므로, 두 색상 tint 는 쓰지 않습니다(`twoColorTint=false`).
 
-- 기본 아니스는 `c012` 가 아니라 **`c9021`** 을 썼습니다. `c012` 의 skel 은 atlas 와 버전이 맞지 않아 `Region not found` 로 읽히지 않습니다.
-- 표정 이름이 곧 감정이라 그대로 `emotion` 값으로 옮겼습니다.
+- 결과: 복장 5종 × (전신 1 + 표정 7~8) = **41컷**, 전신 높이 1600px · 표정 900px.
+- 스크립트: `render.html`(페이지) + `spinelib.py`(Playwright 드라이버) + `produce.py`(컷 목록) — 저장소 밖 작업용.
 
 ### 8-5. WebP 로 저장
 
@@ -291,3 +299,26 @@ im.save(path, "WEBP", quality=90, method=6)   # 투명 채널 유지
 - 1920×1080 인격 일러스트는 폭 1600 으로 줄여 저장했습니다.
 - 썸네일은 4:5 크롭 후 320×400, `quality=82`.
 
+
+---
+
+## 9. 해상도 — 원본 한계 (v5 확인 결과)
+
+공개 소스에서 받을 수 있는 **최대 원본**으로 다시 받았습니다. 아래는 원본 자체가 작은 경우입니다.
+
+| 에셋 | 현재(원본) 해상도 | 비고 |
+| --- | --- | --- |
+| 아나스타샤 각성 일러스트 (`spread/{id}.png`) | 1280×824 | 데레스테 카드 아트의 원본 크기. 더 큰 공개본 없음 |
+| 아나스타샤 미각성 (`chara2/227/{pose}.png`) | 220×464 ~ 780×646 | 카드별로 크기가 다름. 사이트 원본 그대로 |
+| 아나스타샤 푸치 (`puchi/{id}.png`) | **116×180** | v4 에서 3배로 늘려 저장했으나 **가짜 해상도**라 원본으로 되돌림 |
+| 아나스타샤 사인 (`sign/{id}.png`) | **630×504** | v4 는 2배 업스케일. 원본으로 되돌림 |
+| 돈키호테 인격 일러스트 (`{인격}_Full.png`) | **1920×1080** | v4 는 1600×900 으로 줄여 저장 → 원본으로 교체 |
+| 돈키호테 인격 프로필 (`{인격}_Profile.png`) | 256×256 | 위키 원본이 256 |
+| 돈키호테 E.G.O (`{E.G.O}_Don_Quixote.png`) | 1024×1024 (라 상그레 데 산초만 666×666) | 위키 원본 |
+| 아루 표정 (`CharFace/*.webp`) | **400×400** | 게임 원본 스프라이트가 400×400 |
+| 아루 전신 (`portrait/{id}.webp`) | 614×1024 ~ 724×1312 | SchaleDB 원본 |
+| 아루 메모리얼 로비 (`Lobbyillust_*.png`) | **304×240** | 공개된 것 중 최대(SchaleDB lobby 는 182×144) |
+| 아니스 스파인 렌더 | 전신 **1600px** · 표정 **900px** | 모델 원본 해상도(아틀라스 2048²)에 맞춘 값 |
+
+- 카드·스프라이트 계열은 게임 데이터 자체가 작아서, 더 키우면 뭉개지기만 합니다. 그래서 **업스케일 대신 원본 크기**로 저장했습니다.
+- 스튜디오에서 작은 원본을 크게 보면 원래 흐릿합니다(예: 아루 표정 400px). 이건 소스 한계입니다.

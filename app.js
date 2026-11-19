@@ -394,6 +394,13 @@
     document.documentElement.style.setProperty("--accent", accent);
   }
 
+  /* 감정 라벨은 데이터에 정해진 순서로만 보여 준다 (칩이 뒤죽박죽 섞이지 않게) */
+  var EMOTION_ORDER = ["미소", "웃음", "차분", "무표정", "시크", "부끄러움", "삐침", "걱정", "찡그림", "울먹", "놀람", "분노", "결의"];
+  function emoRank(e) {
+    var i = EMOTION_ORDER.indexOf(e);
+    return i < 0 ? 99 : i;
+  }
+
   function renderChips() {
     var c = currentChar();
     var forms = [], emos = [];
@@ -401,21 +408,30 @@
     c.items.forEach(function (it) {
       if (fcount[it.form] == null) { fcount[it.form] = 0; forms.push(it.form); }
       fcount[it.form]++;
+      if (!it.emotion) return;
       if (ecount[it.emotion] == null) { ecount[it.emotion] = 0; emos.push(it.emotion); }
       ecount[it.emotion]++;
     });
+    // 한 컷짜리 감정은 칩에서 빼고, 정해진 순서로 정렬한다
+    emos = emos.filter(function (e) { return ecount[e] >= 2; }).sort(function (a, b) {
+      return emoRank(a) - emoRank(b) || ecount[b] - ecount[a];
+    });
+    var emoTotal = emos.reduce(function (n, e) { return n + ecount[e]; }, 0);
+    if (state.emotion !== "all" && emos.indexOf(state.emotion) < 0) state.emotion = "all";
     els.chipGroups.innerHTML = "";
-    els.chipGroups.appendChild(chipRow("폼", "form", forms, fcount, state.form));
-    els.chipGroups.appendChild(chipRow("감정", "emotion", emos, ecount, state.emotion));
+    els.chipGroups.appendChild(chipRow("폼", "form", forms, fcount, state.form, c.items.length));
+    if (emos.length >= 2) {
+      els.chipGroups.appendChild(chipRow("감정", "emotion", emos, ecount, state.emotion, emoTotal));
+    }
   }
 
-  function chipRow(label, key, values, counts, active) {
+  function chipRow(label, key, values, counts, active, total) {
     var row = el("div", "chip-row");
     row.appendChild(el("span", "chip-label", label));
     var scroller = el("div", "chip-scroll");
     var all = el("button", "chip" + (active === "all" ? " is-active" : ""));
     all.type = "button";
-    all.innerHTML = "전체 <small>" + currentChar().items.length + "</small>";
+    all.innerHTML = "전체 <small>" + (total == null ? currentChar().items.length : total) + "</small>";
     all.addEventListener("click", function () { state[key] = "all"; afterFilter(); });
     scroller.appendChild(all);
     values.forEach(function (v) {
@@ -874,6 +890,8 @@
   $("backBtn").addEventListener("click", function () { goHome(); });
 
   /* ---------------- 시작 ---------------- */
+  var footTotal = $("footTotal");
+  if (footTotal) footTotal.textContent = DATA.meta.total + "컷";
   renderHero();
   restartHero();
   renderTabs();

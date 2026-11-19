@@ -113,10 +113,17 @@ def run(browser, vp, label, out):
     step("보기 전체", lambda: click("#viewSwitch button[data-view='fit']"))
     step("줌 +", lambda: click("#zoomIn"))
     step("줌 ↺", lambda: click("#zoomReset"))
-    step("칩 폼", lambda: click(".chip-row:nth-child(1) .chip:nth-child(2)"), allow_clamp=True)
-    step("칩 폼 전체", lambda: click(".chip-row:nth-child(1) .chip:nth-child(1)"), allow_clamp=True)
-    step("칩 감정", lambda: click(".chip-row:nth-child(2) .chip:nth-child(3)"), allow_clamp=True)
-    step("칩 감정 전체", lambda: click(".chip-row:nth-child(2) .chip:nth-child(1)"), allow_clamp=True)
+    def maybe(lbl, sel, **kw):
+        # 감정 칩이 없는 캐릭터(일러스트만 있는 경우)는 건너뛴다
+        if page.evaluate("s => !!document.querySelector(s)", sel):
+            step(lbl, lambda: click(sel), **kw)
+        else:
+            print(f"  SKIP {lbl:26s} (해당 칩 없음)")
+
+    maybe("칩 폼", ".chip-row:nth-child(1) .chip:nth-child(2)", allow_clamp=True)
+    maybe("칩 폼 전체", ".chip-row:nth-child(1) .chip:nth-child(1)", allow_clamp=True)
+    maybe("칩 감정", ".chip-row:nth-child(2) .chip:nth-child(3)", allow_clamp=True)
+    maybe("칩 감정 전체", ".chip-row:nth-child(2) .chip:nth-child(1)", allow_clamp=True)
 
     # 썸네일 하나를 실제 터치로 (화면에 보이는 것을 고른다)
     idx = page.evaluate("""() => {
@@ -159,7 +166,7 @@ def run(browser, vp, label, out):
     page.evaluate("window.scrollTo(0, Math.min(600, document.scrollingElement.scrollHeight - innerHeight))")
     page.wait_for_timeout(300)
     step("스크롤 상태에서 다음", lambda: click("#nextBtn"), 600)
-    step("스크롤 상태에서 칩", lambda: click(".chip-row:nth-child(1) .chip:nth-child(2)"), 600, allow_clamp=True)
+    maybe("스크롤 상태에서 칩", ".chip-row:nth-child(1) .chip:nth-child(2)", allow_clamp=True)
     step("스크롤 상태에서 배경", lambda: click(".bg-dots button[data-bg='navy']"), 500)
 
     page.screenshot(path=os.path.join(out, f"qa-{label}.png"))
