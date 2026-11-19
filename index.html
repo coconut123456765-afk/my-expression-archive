@@ -4,189 +4,177 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>나만의 표정 아카이브 · My Expression Archive</title>
-<meta name="description" content="최애 1명 + 서브 3명, 4개 작품의 실제 표정·스탠딩·일러스트를 모은 개인 표정 아카이브. 배경 전환, 확대, PNG 저장·복사, 선택 ZIP 내보내기까지." />
-<meta name="theme-color" content="#070b16" />
+<meta name="description" content="최애 아나스타샤와 돈키호테 · 아루 · 아니스의 표정과 일러스트를 모은 개인 아카이브. 117컷." />
+<meta name="theme-color" content="#0a0c11" />
 <link rel="stylesheet" href="styles.css" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='78' font-size='80'%3E%E2%9C%A6%3C/text%3E%3C/svg%3E" />
 </head>
-<body>
-<div class="ambient" aria-hidden="true">
-  <span class="ambient-glow glow-1"></span>
-  <span class="ambient-glow glow-2"></span>
-  <span class="ambient-grid"></span>
-</div>
+<body data-screen="home">
 
+<!-- ================= 상단 바 ================= -->
 <header class="topbar">
-  <div class="topbar-inner">
-    <div class="brand">
-      <span class="brand-mark" aria-hidden="true">◍</span>
-      <div class="brand-text">
-        <p class="brand-title">나만의 표정 아카이브</p>
-        <p class="brand-sub">MY EXPRESSION ARCHIVE <span class="dot">·</span> 1차 프로토타입</p>
-      </div>
-    </div>
-    <div class="topbar-stats" id="topStats"></div>
+  <a class="brand" href="#" id="brandHome" aria-label="처음으로">
+    <span class="brand-mark" aria-hidden="true">✦</span>
+    <span class="brand-text"><b>표정 아카이브</b><em>Expression Archive</em></span>
+  </a>
+  <div class="top-actions">
+    <button class="icon-btn" id="searchToggle" aria-label="검색 열기" aria-expanded="false">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l5 5"/></svg>
+    </button>
+    <button class="icon-btn" id="aboutBtn" aria-label="출처와 이용 안내">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 11v5.5"/><circle cx="12" cy="7.8" r="1.05" fill="currentColor" stroke="none"/></svg>
+    </button>
   </div>
 </header>
 
-<main class="wrap">
+<div class="searchbar" id="searchBar" hidden>
+  <svg viewBox="0 0 24 24" aria-hidden="true" class="sb-icon"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l5 5"/></svg>
+  <input id="searchInput" type="search" inputmode="search" autocomplete="off"
+         placeholder="이름 · 작품 · 태그로 찾기 (예: 수영복, 림버스)" aria-label="검색" />
+  <button id="searchClear" class="sb-clear" aria-label="검색어 지우기" hidden>✕</button>
+</div>
 
-  <!-- 최애 스포트라이트 -->
-  <section class="spotlight" id="spotlight" aria-label="최애 캐릭터 스포트라이트">
-    <div class="spotlight-media media-frame" id="spotlightMedia" data-fit="wide">
-      <img class="media-bd" id="spotlightBd" alt="" aria-hidden="true" />
-      <img class="media-fg" id="spotlightImg" alt="" />
-      <div class="spotlight-fade"></div>
-      <div class="spotlight-badge badge badge-fav">★ 最愛 · FAVORITE</div>
-    </div>
-    <div class="spotlight-body">
-      <p class="eyebrow" id="spotlightWork">스포트라이트</p>
-      <h1 class="spotlight-name" id="spotlightName">아나스타샤</h1>
-      <p class="spotlight-latin" id="spotlightLatin">Anastasia</p>
-      <p class="spotlight-tagline" id="spotlightTagline"></p>
-      <div class="spotlight-meta" id="spotlightMeta"></div>
-      <div class="spotlight-actions">
-        <button class="btn btn-primary" id="spotlightOpen" type="button">스포트라이트 열기 →</button>
-        <div class="spotlight-dots" id="spotlightDots" role="tablist" aria-label="최애 컷 넘기기"></div>
+<!-- ================= 홈 ================= -->
+<main id="home">
+  <section class="hero" id="hero" aria-label="최애 스포트라이트">
+    <a class="hero-card" id="heroCard" href="#" aria-label="아나스타샤 스튜디오 열기">
+      <div class="hero-media">
+        <img class="hero-bg" id="heroBg" alt="" aria-hidden="true" />
+        <img class="hero-fg" id="heroFg" alt="" />
+        <div class="hero-scrim"></div>
+        <div class="hero-dots" id="heroDots" aria-label="스포트라이트 전환"></div>
       </div>
-    </div>
+      <div class="hero-body">
+        <span class="hero-badge" id="heroBadge">최애 · 신데렐라 걸즈</span>
+        <h1 class="hero-name" id="heroName">아나스타샤</h1>
+        <p class="hero-line" id="heroLine">은빛 머리칼 아래, 서리처럼 조용하고 별처럼 다정한 아이돌.</p>
+        <div class="hero-foot">
+          <span class="hero-count" id="heroCount">32컷</span>
+          <span class="hero-go">스튜디오 열기 <b>→</b></span>
+        </div>
+      </div>
+    </a>
   </section>
 
-  <!-- 캐릭터 로스터 -->
-  <section class="roster" aria-label="캐릭터 목록">
-    <div class="section-head">
-      <div>
-        <h2>캐릭터</h2>
-        <p class="muted" id="rosterCount"></p>
-      </div>
-      <div class="tabs" id="workTabs" role="tablist" aria-label="작품별 필터"></div>
-    </div>
+  <nav class="tabs" id="workTabs" aria-label="작품 필터"></nav>
 
-    <div class="search-row">
-      <label class="search">
-        <span class="search-icon" aria-hidden="true">⌕</span>
-        <input id="searchInput" type="search" placeholder="캐릭터 · 작품 · 태그 검색" aria-label="캐릭터 검색" autocomplete="off" />
-      </label>
-      <p class="muted search-hint">예: <button class="link-btn" type="button" data-query="림버스">림버스</button>, <button class="link-btn" type="button" data-query="수영복">수영복</button>, <button class="link-btn" type="button" data-query="차분">차분</button></p>
-    </div>
+  <div class="roster-head">
+    <h2>캐릭터</h2>
+    <span class="roster-count" id="rosterCount"></span>
+  </div>
+  <div class="char-grid" id="charGrid"></div>
+  <p class="empty" id="rosterEmpty" hidden>검색 결과가 없습니다. 다른 이름이나 태그로 찾아보세요.</p>
 
-    <div class="char-grid" id="charGrid"></div>
-    <p class="empty" id="rosterEmpty" hidden>조건에 맞는 캐릭터가 없습니다. 검색어를 지우거나 다른 작품을 골라 보세요.</p>
-  </section>
-
-  <!-- 인스펙터 -->
-  <section class="inspector" id="inspector" aria-label="표정 인스펙터">
-    <div class="section-head">
-      <div>
-        <h2>표정 인스펙터</h2>
-        <p class="muted" id="inspectorSub">캐릭터 카드를 고르면 이곳에서 크게 볼 수 있습니다.</p>
-      </div>
-    </div>
-
-    <div class="inspector-grid">
-      <div class="stage-col">
-        <div class="stage" id="stage" data-bg="checker" data-view="fit">
-          <div class="stage-toolbar">
-            <div class="bg-switch" id="bgSwitch" role="group" aria-label="스테이지 배경 전환">
-              <button type="button" class="bg-btn is-active" data-bg="checker" title="투명 체크무늬"><span class="sw sw-checker"></span>체크</button>
-              <button type="button" class="bg-btn" data-bg="white" title="순백"><span class="sw sw-white"></span>화이트</button>
-              <button type="button" class="bg-btn" data-bg="green" title="크로마키 그린 #00FF00"><span class="sw sw-green"></span>그린</button>
-              <button type="button" class="bg-btn" data-bg="navy" title="딥 네이비"><span class="sw sw-navy"></span>네이비</button>
-            </div>
-            <div class="view-switch" id="viewSwitch" role="group" aria-label="보기 방식">
-              <button type="button" class="view-btn is-active" data-view="fit" title="원본 비율 그대로 전체 보기 (F)"><span class="view-ico" aria-hidden="true">⤢</span>전체</button>
-              <button type="button" class="view-btn" data-view="face" title="얼굴·상반신으로 확대 (G)"><span class="view-ico" aria-hidden="true">◎</span>얼굴</button>
-            </div>
-            <div class="zoom-controls" role="group" aria-label="확대 축소">
-              <button type="button" class="icon-btn" id="zoomOut" title="축소 (−)">−</button>
-              <span class="zoom-label" id="zoomLabel">100%</span>
-              <button type="button" class="icon-btn" id="zoomIn" title="확대 (+)">+</button>
-              <button type="button" class="icon-btn" id="zoomReset" title="초기화 (0)">↺</button>
-            </div>
-          </div>
-
-          <div class="stage-viewport" id="stageViewport">
-            <div class="stage-canvas" id="stageCanvas">
-              <img id="stageImg" class="media-fg" alt="" draggable="false" />
-            </div>
-          </div>
-
-          <div class="stage-footer">
-            <div class="nav-group">
-              <button type="button" class="icon-btn" id="prevBtn" title="이전 (←)">←</button>
-              <span class="stage-counter" id="stageCounter">0 / 0</span>
-              <button type="button" class="icon-btn" id="nextBtn" title="다음 (→)">→</button>
-            </div>
-            <button type="button" class="play-btn" id="playBtn" aria-pressed="false">▶ 자동재생</button>
-          </div>
-
-          <div class="stage-caption" id="stageCaption"></div>
-        </div>
-        <p class="stage-hint muted">방향키 ← → 이동 · <kbd>+</kbd>/<kbd>−</kbd> 확대 · <kbd>0</kbd> 초기화 · <kbd>F</kbd> 전체 / <kbd>G</kbd> 얼굴 · 이미지를 드래그하면 이동합니다</p>
-      </div>
-
-      <aside class="side-col">
-        <div class="side-head">
-          <div>
-            <h3 id="charName">캐릭터를 선택하세요</h3>
-            <p class="muted" id="charWork"></p>
-          </div>
-          <span class="badge badge-fav" id="charFav" hidden>★ 최애</span>
-        </div>
-
-        <div class="meta-card" id="itemMeta"></div>
-
-        <div class="filter-block">
-          <div class="filter-row"><p class="filter-title">종류</p><div class="chips" id="typeChips"></div></div>
-          <div class="filter-row"><p class="filter-title">감정</p><div class="chips" id="emotionChips"></div></div>
-          <div class="filter-row"><p class="filter-title">의상</p><div class="chips" id="outfitChips"></div></div>
-        </div>
-
-        <div class="thumbs-head">
-          <p class="filter-title">컷 <span class="muted" id="thumbCount"></span></p>
-          <div class="thumbs-actions">
-            <button type="button" class="link-btn" id="selectAllBtn">전체 선택</button>
-            <span class="muted">·</span>
-            <button type="button" class="link-btn" id="selectNoneBtn">선택 해제</button>
-          </div>
-        </div>
-        <div class="thumb-grid" id="thumbGrid"></div>
-
-        <div class="export-row">
-          <button type="button" class="btn btn-primary" id="saveBtn">PNG 저장</button>
-          <button type="button" class="btn" id="copyBtn">PNG 복사</button>
-          <button type="button" class="btn btn-accent" id="zipBtn">선택 ZIP <span class="pill-count" id="zipCount">0</span></button>
-        </div>
-
-        <div class="source-block" id="sourceBlock"></div>
-      </aside>
-    </div>
-  </section>
+  <footer class="site-foot">
+    <p><b>117컷</b> · 4개 작품 · 모든 이미지는 공개 팬/위키 아카이브에서 받은 실제 파일입니다.</p>
+    <p class="muted">개인 감상용. 이미지 권리는 각 원저작권자에게 있습니다.</p>
+  </footer>
 </main>
 
-<footer class="footer">
-  <p>개인 감상용 팬 아카이브입니다. 각 이미지의 권리는 원 저작권자에게 있으며, 출처 링크는 각 캐릭터와 컷 정보에 표시되어 있습니다.</p>
-  <p class="muted">파일을 더블클릭해 열어도(<code>file://</code>) 내장 사본으로 PNG 저장 · 복사 · ZIP이 동작합니다. 브라우저가 복사를 막거나 더 선명한 원본 바이트가 필요하면 <code>python3 -m http.server</code> 로 열어 보세요. 자세한 안내는 <code>README.md</code>.</p>
-</footer>
+<!-- ================= 스튜디오 ================= -->
+<section id="studio" hidden aria-label="스튜디오">
+  <div class="studio-top">
+    <button class="icon-btn back" id="backBtn" aria-label="목록으로">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+    </button>
+    <div class="studio-title">
+      <b id="studioName">아나스타샤</b>
+      <em id="studioWork">신데렐라 걸즈 · 32컷</em>
+    </div>
+    <button class="icon-btn" id="studioAbout" aria-label="이 캐릭터의 출처">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 11v5.5"/><circle cx="12" cy="7.8" r="1.05" fill="currentColor" stroke="none"/></svg>
+    </button>
+  </div>
 
+  <div class="studio-body">
+    <div class="stage-col">
+      <div class="stage" id="stage" data-bg="checker" data-view="fit">
+        <div class="stage-frame">
+          <div class="stage-canvas" id="stageCanvas">
+            <img id="stageImg" alt="" draggable="false" />
+          </div>
+        </div>
+        <div class="stage-hud">
+          <span class="hud-count" id="stageCounter">1 / 32</span>
+          <span class="hud-type" id="stageType">일러스트</span>
+        </div>
+        <button class="stage-arrow prev" id="prevBtn" aria-label="이전 컷">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+        </button>
+        <button class="stage-arrow next" id="nextBtn" aria-label="다음 컷">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
+        </button>
+        <div class="stage-caption">
+          <b id="capTitle">스타리비치</b>
+          <span id="capMeta">미소 · 수영복</span>
+        </div>
+      </div>
+
+      <div class="controls" id="controlBar">
+        <div class="ctl-row">
+          <div class="seg" id="viewSwitch" role="group" aria-label="보기 방식">
+            <button data-view="fit" class="is-active">전체</button>
+            <button data-view="face">얼굴</button>
+          </div>
+          <div class="bg-dots" id="bgSwitch" role="group" aria-label="배경">
+            <button data-bg="checker" class="is-active" aria-label="투명 체크"></button>
+            <button data-bg="white" aria-label="화이트"></button>
+            <button data-bg="green" aria-label="크로마키 그린"></button>
+            <button data-bg="navy" aria-label="딥 네이비"></button>
+          </div>
+          <div class="zoom">
+            <button id="zoomOut" aria-label="축소">−</button>
+            <span id="zoomLabel">100%</span>
+            <button id="zoomIn" aria-label="확대">+</button>
+            <button id="zoomReset" aria-label="초기화">↺</button>
+          </div>
+        </div>
+        <div class="ctl-row">
+          <button class="ctl-btn" id="playBtn" aria-pressed="false">▶ 자동</button>
+          <button class="ctl-btn" id="saveBtn">PNG 저장</button>
+          <button class="ctl-btn" id="copyBtn">복사</button>
+          <a class="ctl-btn ghost" id="srcLink" href="#" target="_blank" rel="noopener noreferrer">원본 ↗</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="chips" id="chipGroups"></div>
+      <div class="thumbs-head">
+        <span>컷 <b id="thumbCount">32</b></span>
+        <div class="thumbs-tools">
+          <button id="selectAllBtn">전체 선택</button>
+          <button id="selectNoneBtn">해제</button>
+        </div>
+      </div>
+      <div class="thumb-grid" id="thumbGrid"></div>
+      <p class="empty small" id="thumbEmpty" hidden>이 필터에 맞는 컷이 없습니다.</p>
+      <p class="panel-credit" id="panelCredit"></p>
+    </div>
+  </div>
+
+  <div class="selbar" id="selBar" hidden>
+    <span><b id="zipCount">0</b>장 선택</span>
+    <button class="primary" id="zipBtn">ZIP 저장</button>
+    <button class="ghost" id="selClear">해제</button>
+  </div>
+</section>
+
+<!-- ================= 모달 / 토스트 ================= -->
 <div class="modal" id="modal" hidden>
   <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-    <button type="button" class="modal-close" id="modalClose" aria-label="닫기">✕</button>
-    <h3 id="modalTitle"></h3>
+    <div class="modal-head">
+      <h3 id="modalTitle">안내</h3>
+      <button class="modal-x" id="modalX" aria-label="닫기">✕</button>
+    </div>
     <div class="modal-body" id="modalBody"></div>
     <div class="modal-actions" id="modalActions"></div>
   </div>
 </div>
-
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
+<noscript><p style="padding:24px;color:#fff">이 페이지는 JavaScript 가 필요합니다.</p></noscript>
 
 <script src="data/characters.js"></script>
-<script>
-  /* file:// 로 더블클릭해 열었을 때만 내장 이미지 사본(약 4.7MB)을 읽습니다.
-     http(s) 로 열면 assets/ 의 원본 PNG 를 그대로 사용합니다. */
-  if (location.protocol === "file:") {
-    document.write('<script src="data/assets-embed.js"><\/script>');
-  }
-</script>
 <script src="app.js"></script>
 </body>
 </html>

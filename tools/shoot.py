@@ -1,19 +1,12 @@
 #!/usr/bin/env python3
-"""v2 검증 스크립트: 로컬 서버로 열어 콘솔 에러를 모으고 스크린샷을 찍습니다.
-
-사용:
-    LD_LIBRARY_PATH=... PLAYWRIGHT_BROWSERS_PATH=... python3 tools/shoot.py
-"""
-import functools
-import http.server
-import socketserver
-import threading
+"""v3 검증: 콘솔 오류 · 깨진 이미지 · 가로 스크롤 확인 + 스크린샷."""
+import functools, http.server, socketserver, threading, json
 from playwright.sync_api import sync_playwright
 
 ROOT = "/workspace/projects/my-expression-archive"
 OUT = "/workspace/downloads"
 QA = "/workspace/tmp"
-PORT = 8813
+PORT = 8823
 
 Handler = functools.partial(http.server.SimpleHTTPRequestHandler, directory=ROOT)
 socketserver.TCPServer.allow_reuse_address = True
@@ -21,117 +14,105 @@ httpd = socketserver.TCPServer(("127.0.0.1", PORT), Handler)
 threading.Thread(target=httpd.serve_forever, daemon=True).start()
 
 errors = []
-
-
 def watch(page):
     page.on("console", lambda m: errors.append((m.type, m.text)) if m.type in ("error", "warning") else None)
     page.on("pageerror", lambda e: errors.append(("pageerror", str(e))))
+    page.on("requestfailed", lambda r: errors.append(("requestfailed", r.url)))
 
-
-def settle(page, ms=500):
-    page.wait_for_timeout(ms)
-
-
-with sync_playwright() as p:
-    browser = p.chromium.launch()
-    page = browser.new_page(viewport={"width": 1440, "height": 1000}, device_scale_factor=1)
-    watch(page)
-    page.goto(f"http://127.0.0.1:{PORT}/index.html", wait_until="networkidle")
-    settle(page, 1200)
-
-    # lazy 이미지까지 모두 로드시킨 뒤 맨 위로
+def lazy_all(page):
     page.evaluate("""async () => {
-      for (let y = 0; y < document.body.scrollHeight; y += 500) {
-        window.scrollTo(0, y); await new Promise(r => setTimeout(r, 60));
-      }
+      for (let y = 0; y < document.body.scrollHeight; y += 400) { window.scrollTo(0, y); await new Promise(r => setTimeout(r, 45)); }
       window.scrollTo(0, 0);
     }""")
-    settle(page, 1200)
+    page.wait_for_timeout(900)
 
-    page.screenshot(path=f"{OUT}/my-expression-archive-v2-desktop.png", full_page=True)
+checks = {}
+with sync_playwright() as p:
+    b = p.chromium.launch()
 
-    # 얼굴 포커스(돈키호테) — 프레임 개선이 가장 잘 보이는 조합
-    page.evaluate("window.__archive.selectCharacter('don', false)")
-    settle(page, 700)
-    page.click(".view-btn[data-view='face']")
-    settle(page, 600)
-    page.evaluate("document.querySelector('#inspector').scrollIntoView({block:'start'})")
-    settle(page, 700)
-    page.screenshot(path=f"{OUT}/my-expression-archive-v2-inspector.png")
+    # ---------- 데스크톱 ----------
+    page = b.new_page(viewport={"width": 1440, "height": 1000}, device_scale_factor=1)
+    watch(page)
+    page.goto(f"http://127.0.0.1:{PORT}/index.html", wait_until="networkidle")
+    page.wait_for_timeout(900)
+    lazy_all(page)
+    checks["desktop"] = page.evaluate("""() => ({
+      screen: document.body.dataset.screen,
+      cards: document.querySelectorAll('.char-card').length,
+      tabs: document.querySelectorAll('.tab').length,
+      hOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      broken: [...document.images].filter(i => i.getAttribute('src') && i.complete && i.naturalWidth === 0).length,
+      heroVisible: !!document.querySelector('.hero-card').offsetHeight
+    })""")
+    page.screenshot(path=f"{OUT}/my-expression-archive-v3-desktop.png", full_page=True)
 
-    # QA 컷들
-    page.locator(".roster").screenshot(path=f"{QA}/v2-roster.png")
-    page.click(".view-btn[data-view='fit']")
-    settle(page, 500)
-    page.screenshot(path=f"{QA}/v2-inspector-don-fit.png")
-    page.evaluate("window.__archive.selectCharacter('anis', false)")
-    settle(page, 600)
-    page.screenshot(path=f"{QA}/v2-inspector-anis-fit.png")
-    page.click(".view-btn[data-view='face']")
-    settle(page, 500)
-    page.screenshot(path=f"{QA}/v2-inspector-anis-face.png")
-    page.evaluate("window.__archive.selectCharacter('aru', false)")
-    settle(page, 600)
-    page.screenshot(path=f"{QA}/v2-inspector-aru-face.png")
-    page.click(".view-btn[data-view='fit']")
-    settle(page, 400)
-    page.locator(".inspector").screenshot(path=f"{QA}/v2-inspector-aru-fit.png")
+    # 스튜디오 (아나스타샤)
+    page.click(".char-card")
+    page.wait_for_timeout(900)
+    lazy_all(page)
+    checks["studio-anya"] = page.evaluate("""() => ({
+      name: document.querySelector('#studioName').textContent,
+      thumbs: document.querySelectorAll('.thumb').length,
+      chips: document.querySelectorAll('.chip').length,
+      hOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      broken: [...document.images].filter(i => i.getAttribute('src') && i.complete && i.naturalWidth === 0).length,
+      stageHasImg: !!document.querySelector('#stageImg').getAttribute('src')
+    })""")
+    page.screenshot(path=f"{QA}/v3-studio-desktop.png", full_page=False)
 
-    # 배경 4종 확인 (네이비에서 앰비언트 글로우가 보이는지)
-    page.evaluate("window.__archive.selectCharacter('anis', false)")
-    settle(page, 500)
-    page.click(".bg-btn[data-bg='navy']")
-    settle(page, 400)
-    page.screenshot(path=f"{QA}/v2-bg-navy.png")
-    page.click(".bg-btn[data-bg='white']")
-    settle(page, 300)
-    page.click(".bg-btn[data-bg='green']")
-    settle(page, 300)
-    page.click(".bg-btn[data-bg='checker']")
-    settle(page, 300)
+    # 돈키호테 : 얼굴 보기 + 필터
+    page.goto(f"http://127.0.0.1:{PORT}/index.html#/don", wait_until="networkidle")
+    page.wait_for_timeout(900)
+    page.click("#viewSwitch [data-view='face']")
+    page.wait_for_timeout(400)
+    page.screenshot(path=f"{QA}/v3-studio-don-face.png")
+    page.click(".chip-row:nth-child(1) .chip:nth-child(3)")
+    page.wait_for_timeout(400)
+    checks["don-filter"] = page.evaluate("""() => ({
+      thumbs: document.querySelectorAll('.thumb').length,
+      activeChip: document.querySelector('.chip.is-active + .chip.is-active') ? true : false
+    })""")
+    page.screenshot(path=f"{QA}/v3-studio-don-filter.png")
 
-    # 줌 · 팬 · 키보드
-    page.click("#zoomIn")
-    page.click("#zoomIn")
-    settle(page, 200)
-    zoom_label = page.text_content("#zoomLabel")
-    page.keyboard.press("0")
-    page.keyboard.press("g")
-    key_view = page.get_attribute("#stage", "data-view")
-    page.keyboard.press("f")
-    key_view2 = page.get_attribute("#stage", "data-view")
+    # 아루 : ZIP 선택
+    page.goto(f"http://127.0.0.1:{PORT}/index.html#/aru", wait_until="networkidle")
+    page.reload(wait_until="networkidle")
+    page.wait_for_timeout(900)
+    print("ARU PAGE:", page.text_content("#studioName"))
+    page.click("#selectAllBtn")
+    page.wait_for_timeout(300)
+    checks["aru-zip"] = page.evaluate("() => ({ sel: document.querySelectorAll('.thumb.is-selected').length, bar: !document.querySelector('#selBar').hidden })")
+    page.screenshot(path=f"{QA}/v3-studio-aru-select.png")
 
-    # 모바일
-    mobile = browser.new_page(viewport={"width": 390, "height": 844}, device_scale_factor=2)
-    watch(mobile)
-    mobile.goto(f"http://127.0.0.1:{PORT}/index.html", wait_until="networkidle")
-    settle(mobile, 1000)
-    mobile.screenshot(path=f"{QA}/v2-mobile.png")
-    mobile.evaluate("window.__archive.selectCharacter('anis', false)")
-    settle(mobile, 700)
-    mobile.evaluate("document.querySelector('#inspector').scrollIntoView({block:'start'})")
-    settle(mobile, 600)
-    mobile.screenshot(path=f"{QA}/v2-mobile-stage.png")
+    # ---------- 모바일 ----------
+    m = b.new_page(viewport={"width": 390, "height": 844}, device_scale_factor=2, is_mobile=True, has_touch=True)
+    watch(m)
+    m.goto(f"http://127.0.0.1:{PORT}/index.html", wait_until="networkidle")
+    m.wait_for_timeout(900)
+    lazy_all(m)
+    checks["mobile"] = m.evaluate("""() => ({
+      hOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      broken: [...document.images].filter(i => i.getAttribute('src') && i.complete && i.naturalWidth === 0).length,
+      cols: getComputedStyle(document.querySelector('.char-grid')).gridTemplateColumns.split(' ').length,
+      cardsPerRow: (() => { const c = document.querySelector('.char-card').getBoundingClientRect(); return Math.round(document.querySelector('.char-grid').getBoundingClientRect().width / c.width); })()
+    })""")
+    m.screenshot(path=f"{OUT}/my-expression-archive-v3-mobile.png", full_page=True)
 
-    checks = page.evaluate("""() => {
-      const st = document.querySelector('#stage');
-      const frames = [...document.querySelectorAll('.char-thumb')].map(f => f.dataset.fit);
-      return {
-        stageView: st.dataset.view,
-        cards: frames,
-        cardBackdrops: document.querySelectorAll('.char-thumb .media-bd').length,
-        thumbBackdrops: document.querySelectorAll('.thumb .media-bd').length,
-        thumbs: document.querySelectorAll('.thumb').length,
-        spotlightBackdrop: !!document.querySelector('#spotlightBd').getAttribute('src'),
-        hOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
-        brokenImages: [...document.images].filter(i => i.complete && i.naturalWidth === 0).length
-      };
-    }""")
-    print("CHECKS", checks)
-    print("ZOOM", zoom_label, "KEY_G", key_view, "KEY_F", key_view2)
-    browser.close()
+    m.goto(f"http://127.0.0.1:{PORT}/index.html#/anya", wait_until="networkidle")
+    m.wait_for_timeout(800)
+    m.screenshot(path=f"{QA}/v3-mobile-studio.png")
+    checks["mobile-studio"] = m.evaluate("""() => ({
+      hOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      stageH: document.querySelector('#stage').offsetHeight,
+      thumbs: document.querySelectorAll('.thumb').length,
+      ctrlBottom: Math.round(document.querySelector('#controlBar').getBoundingClientRect().bottom)
+    })""")
+    m.screenshot(path=f"{QA}/v3-mobile-studio-full.png", full_page=True)
+
+    b.close()
 
 httpd.shutdown()
+print(json.dumps(checks, ensure_ascii=False, indent=1))
 print("CONSOLE_ISSUES", len(errors))
-for e in errors:
+for e in errors[:30]:
     print(e)
