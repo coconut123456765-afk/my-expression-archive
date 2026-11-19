@@ -57,6 +57,46 @@
     });
   }
 
+  /* ---------------- 스크롤 ----------------
+     원칙: 버튼(칩·탭·배경·줌·이전/다음·썸네일…)을 눌렀을 때 페이지(문서) 자체는
+     절대 스크롤하지 않는다. 사용자가 보고 있던 위치를 그대로 유지한다.
+     썸네일이 화면 밖에 있으면, 문서가 아니라 썸네일 목록을 담고 있는
+     안쪽 스크롤 영역(데스크톱 패널)만 조용히 움직인다. */
+  function nearestScroller(node) {
+    if (!node) return null;
+    var p = node.parentElement;
+    while (p && p !== document.body && p !== document.documentElement) {
+      var cs = window.getComputedStyle(p);
+      if (/(auto|scroll)/.test(cs.overflowY) && p.scrollHeight > p.clientHeight + 2) return p;
+      p = p.parentElement;
+    }
+    return null;
+  }
+  function revealInOwnScroller(node) {
+    if (!node) return;
+    var sc = nearestScroller(node);
+    if (!sc) return;                       // 안쪽 스크롤러가 없으면 아무것도 하지 않는다
+    var nr = node.getBoundingClientRect(), sr = sc.getBoundingClientRect();
+    var pad = 10;
+    if (nr.top < sr.top + pad) sc.scrollTop += nr.top - sr.top - pad;
+    else if (nr.bottom > sr.bottom - pad) sc.scrollTop += nr.bottom - sr.bottom + pad;
+  }
+  function preserveScroll(fn) {
+    var y = window.pageYOffset;
+    fn();
+    if (window.pageYOffset !== y) window.scrollTo(0, y);
+  }
+  /* 화면을 바꿀 때만 맨 위로.
+     렌더링 뒤에 부르고, 다음 프레임에 한 번 더 맞춰
+     브라우저의 스크롤 앵커링·포커스 복원이 위치를 되돌리지 않게 한다. */
+  function scrollPageTop() { scrollPageTo(0); }
+  function scrollPageTo(y) {
+    var a = document.activeElement;
+    if (a && a !== document.body && typeof a.blur === "function") { try { a.blur(); } catch (e) {} }
+    window.scrollTo(0, y);
+    if (window.requestAnimationFrame) requestAnimationFrame(function () { window.scrollTo(0, y); });
+  }
+
   var favoriteChar = DATA.characters.filter(function (c) { return c.favorite; })[0] || DATA.characters[0];
 
   /* ---------------- 상태 ---------------- */
@@ -125,6 +165,8 @@
   els.modal.addEventListener("click", function (e) { if (e.target === els.modal) closeModal(); });
 
   /* ---------------- 라우팅 ---------------- */
+  /* 뒤로/앞으로 이동할 때 브라우저가 예전 스크롤 위치를 임의로 되살리지 않게 한다 */
+  if ("scrollRestoration" in history) { try { history.scrollRestoration = "manual"; } catch (e) {} }
   function parseHash() {
     var h = (location.hash || "").replace(/^#\/?/, "");
     if (!h) return { screen: "home" };
@@ -146,22 +188,27 @@
     showStudio();
   }
   function showHome() {
+    var from = state.screen;
     state.screen = "home";
     document.body.setAttribute("data-screen", "home");
     els.studio.hidden = true;
     els.home.hidden = false;
     stopPlay();
-    window.scrollTo({ top: 0 });
     renderRoster();
+    // 스튜디오에서 돌아올 때는 보던 목록 위치로, 그 외에는 맨 위로
+    if (from === "studio") scrollPageTo(homeScroll);
+    else scrollPageTop();
   }
   function showStudio() {
+    if (state.screen === "home") homeScroll = window.pageYOffset;
     state.screen = "studio";
     document.body.setAttribute("data-screen", "studio");
     els.home.hidden = true;
     els.studio.hidden = false;
-    window.scrollTo({ top: 0 });
     renderStudio();
+    scrollPageTop();
   }
+  var homeScroll = 0;   // 스튜디오로 들어가기 직전에 보던 목록 위치
   window.addEventListener("popstate", function () {
     var r = parseHash();
     if (r.screen === "studio" && charById(r.charId)) {
@@ -223,7 +270,7 @@
     var all = el("button", "tab" + (state.work === "all" ? " is-active" : ""));
     all.type = "button";
     all.innerHTML = "전체 <small>" + DATA.characters.length + "</small>";
-    all.addEventListener("click", function () { state.work = "all"; renderTabs(); renderRoster(); });
+    all.addEventListener("click", function () { state.work = "all"; preserveScroll(function () { renderTabs(); renderRoster(); }); });
     els.workTabs.appendChild(all);
     DATA.works.forEach(function (w) {
       var chars = DATA.characters.filter(function (c) { return c.work === w.id; });
@@ -231,7 +278,7 @@
       var b = el("button", "tab" + (state.work === w.id ? " is-active" : ""));
       b.type = "button";
       b.innerHTML = w.name + " <small>" + chars.reduce(function (n, c) { return n + c.items.length; }, 0) + "</small>";
-      b.addEventListener("click", function () { state.work = w.id; renderTabs(); renderRoster(); });
+      b.addEventListener("click", function () { state.work = w.id; preserveScroll(function () { renderTabs(); renderRoster(); }); });
       els.workTabs.appendChild(b);
     });
   }
@@ -295,14 +342,14 @@
     else {
       els.searchInput.value = ""; state.query = "";
       els.searchClear.hidden = true;
-      renderRoster();
+      preserveScroll(renderRoster);
     }
   }
   els.searchToggle.addEventListener("click", function () { setSearchOpen(els.searchBar.hidden); });
   els.searchInput.addEventListener("input", function () {
     state.query = els.searchInput.value.trim();
     els.searchClear.hidden = !state.query;
-    renderRoster();
+    preserveScroll(renderRoster);
   });
   els.searchClear.addEventListener("click", function () {
     els.searchInput.value = ""; state.query = ""; els.searchClear.hidden = true;
@@ -386,10 +433,14 @@
   }
 
   function afterFilter() {
-    var list = visibleItems();
-    if (!list.length) state.itemId = null;
-    else if (!list.some(function (i) { return i.id === state.itemId; })) state.itemId = list[0].id;
-    renderChips(); renderStage(); renderThumbs(); resetZoom();
+    preserveScroll(function () {
+      var list = visibleItems();
+      if (!list.length) state.itemId = null;
+      else if (!list.some(function (i) { return i.id === state.itemId; })) state.itemId = list[0].id;
+      renderChips(); renderStage(); renderThumbs(); resetZoom();
+    });
+    // 필터가 바뀌어도 지금 보고 있는 컷·위치를 그대로 둔다 (목록으로 튕기지 않음)
+    revealInOwnScroller(els.thumbGrid.querySelector(".thumb.is-active"));
   }
 
   /* --- 스테이지 --- */
@@ -478,7 +529,16 @@
     resetZoom();
     renderStage();
     if (history.replaceState) history.replaceState(null, "", "#/" + state.charId + "/" + id);
-    // 활성 썸네일 갱신
+    syncActiveThumb(id);
+  }
+
+  /* 활성 썸네일 표시만 갱신한다.
+     예전에는 scrollIntoView() 로 썸네일을 화면 가운데로 끌어왔는데,
+     모바일에서는 페이지 전체가 아래 썸네일 목록으로 튕겨 내려가
+     갤러리에서 옆으로 넘길 때마다 목록으로 이동하는 것처럼 보였다.
+     이제 문서는 건드리지 않고, 썸네일 목록 자체가 스크롤 영역일 때만
+     그 안에서만 조용히 위치를 맞춘다. */
+  function syncActiveThumb(id) {
     Array.prototype.forEach.call(els.thumbGrid.children, function (node) {
       node.classList.remove("is-active");
     });
@@ -486,15 +546,9 @@
     var i = 0;
     list.forEach(function (x, k) { if (x.id === id) i = k; });
     var node = els.thumbGrid.children[i];
-    if (node) {
-      node.classList.add("is-active");
-      if (node.scrollIntoView) {
-        var r = node.getBoundingClientRect();
-        if (r.bottom > window.innerHeight - 90 || r.top < 70) {
-          node.scrollIntoView({ block: "center", behavior: "smooth" });
-        }
-      }
-    }
+    if (!node) return;
+    node.classList.add("is-active");
+    revealInOwnScroller(node);
   }
 
   function step(d) {
