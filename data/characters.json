@@ -2712,8 +2712,8 @@
     },
     {
      "id": "don-77",
-     "file": "assets/don/77-ego-cut.webp",
-     "thumb": "assets/thumbs/don/77-ego-cut.webp",
+     "file": "assets/don/77-ego-yearning-mircalla.webp",
+     "thumb": "assets/thumbs/don/77-ego-yearning-mircalla.webp",
      "title": "갈망 미르칼라",
      "type": "E.G.O",
      "form": "E.G.O 일러스트",
@@ -4154,11 +4154,11 @@
       "전신",
       "스탠딩"
      ],
-     "w": 252,
-     "h": 204,
+     "w": 557,
+     "h": 1024,
      "focus": 0.09,
-     "source": "https://bluearchive.wiki/wiki/Aru",
-     "sourceLabel": "Blue Archive Wiki · Portrait"
+     "source": "https://schaledb.com/images/student/portrait/10000.webp",
+     "sourceLabel": "SchaleDB · 전신 스탠딩"
     },
     {
      "id": "aru-76",
@@ -4173,11 +4173,11 @@
       "전신",
       "스탠딩"
      ],
-     "w": 252,
-     "h": 204,
+     "w": 722,
+     "h": 1309,
      "focus": 0.09,
-     "source": "https://bluearchive.wiki/wiki/Aru_(Dress)",
-     "sourceLabel": "Blue Archive Wiki · Portrait"
+     "source": "https://schaledb.com/images/student/portrait/10031.webp",
+     "sourceLabel": "SchaleDB · 전신 스탠딩"
     },
     {
      "id": "aru-77",
@@ -4192,11 +4192,11 @@
       "전신",
       "스탠딩"
      ],
-     "w": 252,
-     "h": 204,
+     "w": 461,
+     "h": 1343,
      "focus": 0.09,
-     "source": "https://bluearchive.wiki/wiki/Aru_(Dress)",
-     "sourceLabel": "Blue Archive Wiki · Portrait"
+     "source": "https://schaledb.com/images/student/portrait/10089.webp",
+     "sourceLabel": "SchaleDB · 전신 스탠딩"
     },
     {
      "id": "aru-78",
@@ -4447,8 +4447,8 @@
     },
     {
      "id": "anis-10",
-     "file": "assets/anis/10-cut-idle.webp",
-     "thumb": "assets/thumbs/anis/10-cut-idle.webp",
+     "file": "assets/anis/10-base-idle.webp.webp",
+     "thumb": "assets/thumbs/anis/10-base-idle.webp.webp",
      "title": "차분한 기본",
      "type": "표정",
      "form": "표정 · 기본",
@@ -4466,8 +4466,8 @@
     },
     {
      "id": "anis-11",
-     "file": "assets/anis/11-cut-angry.webp",
-     "thumb": "assets/thumbs/anis/11-cut-angry.webp",
+     "file": "assets/anis/11-base-angry.webp.webp",
+     "thumb": "assets/thumbs/anis/11-base-angry.webp.webp",
      "title": "분노",
      "type": "표정",
      "form": "표정 · 기본",
@@ -4485,8 +4485,8 @@
     },
     {
      "id": "anis-12",
-     "file": "assets/anis/12-cut-delight.webp",
-     "thumb": "assets/thumbs/anis/12-cut-delight.webp",
+     "file": "assets/anis/12-base-delight.webp.webp",
+     "thumb": "assets/thumbs/anis/12-base-delight.webp.webp",
      "title": "활짝 웃음",
      "type": "표정",
      "form": "표정 · 기본",
@@ -4504,8 +4504,8 @@
     },
     {
      "id": "anis-13",
-     "file": "assets/anis/13-cut-no.webp",
-     "thumb": "assets/thumbs/anis/13-cut-no.webp",
+     "file": "assets/anis/13-base-no.webp.webp",
+     "thumb": "assets/thumbs/anis/13-base-no.webp.webp",
      "title": "부정",
      "type": "표정",
      "form": "표정 · 기본",
@@ -4523,8 +4523,8 @@
     },
     {
      "id": "anis-14",
-     "file": "assets/anis/14-cut-pain.webp",
-     "thumb": "assets/thumbs/anis/14-cut-pain.webp",
+     "file": "assets/anis/14-base-pain.webp.webp",
+     "thumb": "assets/thumbs/anis/14-base-pain.webp.webp",
      "title": "아픔",
      "type": "표정",
      "form": "표정 · 기본",
@@ -4542,8 +4542,8 @@
     },
     {
      "id": "anis-15",
-     "file": "assets/anis/15-cut-rage.webp",
-     "thumb": "assets/thumbs/anis/15-cut-rage.webp",
+     "file": "assets/anis/15-base-rage.webp.webp",
+     "thumb": "assets/thumbs/anis/15-base-rage.webp.webp",
      "title": "격노",
      "type": "표정",
      "form": "표정 · 기본",
@@ -4561,8 +4561,8 @@
     },
     {
      "id": "anis-16",
-     "file": "assets/anis/16-cut-worry.webp",
-     "thumb": "assets/thumbs/anis/16-cut-worry.webp",
+     "file": "assets/anis/16-base-worry.webp.webp",
+     "thumb": "assets/thumbs/anis/16-base-worry.webp.webp",
      "title": "걱정",
      "type": "표정",
      "form": "표정 · 기본",
@@ -4580,8 +4580,8 @@
     },
     {
      "id": "anis-17",
-     "file": "assets/anis/17-cut-idle.webp",
-     "thumb": "assets/thumbs/anis/17-cut-idle.webp",
+     "file": "assets/anis/17-summer-idle.webp.webp",
+     "thumb": "assets/thumbs/anis/17-summer-idle.webp.webp",
      "title": "눈감은 미소",
      "type": "표정",
      "form": "표정 · 스파클링 서머",
@@ -4599,8 +4599,8 @@
     },
     {
      "id": "anis-18",
-     "file": "assets/anis/18-cut-delight.webp",
-     "thumb": "assets/thumbs/anis/18-cut-delight.webp",
+     "file": "assets/anis/18-summer-delight.webp.webp",
+     "thumb": "assets/thumbs/anis/18-summer-delight.webp.webp",
      "title": "환한 웃음",
      "type": "표정",
      "form": "표정 · 스파클링 서머",
@@ -4618,8 +4618,8 @@
     },
     {
      "id": "anis-19",
-     "file": "assets/anis/19-cut-shy.webp",
-     "thumb": "assets/thumbs/anis/19-cut-shy.webp",
+     "file": "assets/anis/19-summer-shy.webp.webp",
+     "thumb": "assets/thumbs/anis/19-summer-shy.webp.webp",
      "title": "부끄러움",
      "type": "표정",
      "form": "표정 · 스파클링 서머",
@@ -4637,8 +4637,8 @@
     },
     {
      "id": "anis-20",
-     "file": "assets/anis/20-cut-angry.webp",
-     "thumb": "assets/thumbs/anis/20-cut-angry.webp",
+     "file": "assets/anis/20-summer-angry.webp.webp",
+     "thumb": "assets/thumbs/anis/20-summer-angry.webp.webp",
      "title": "분노",
      "type": "표정",
      "form": "표정 · 스파클링 서머",
@@ -4656,8 +4656,8 @@
     },
     {
      "id": "anis-21",
-     "file": "assets/anis/21-cut-worry.webp",
-     "thumb": "assets/thumbs/anis/21-cut-worry.webp",
+     "file": "assets/anis/21-summer-worry.webp.webp",
+     "thumb": "assets/thumbs/anis/21-summer-worry.webp.webp",
      "title": "걱정",
      "type": "표정",
      "form": "표정 · 스파클링 서머",
@@ -4675,8 +4675,8 @@
     },
     {
      "id": "anis-22",
-     "file": "assets/anis/22-cut-special.webp",
-     "thumb": "assets/thumbs/anis/22-cut-special.webp",
+     "file": "assets/anis/22-summer-special.webp.webp",
+     "thumb": "assets/thumbs/anis/22-summer-special.webp.webp",
      "title": "볼 발갛힌 미소",
      "type": "표정",
      "form": "표정 · 스파클링 서머",
@@ -4694,8 +4694,8 @@
     },
     {
      "id": "anis-23",
-     "file": "assets/anis/23-cut-no.webp",
-     "thumb": "assets/thumbs/anis/23-cut-no.webp",
+     "file": "assets/anis/23-summer-no.webp.webp",
+     "thumb": "assets/thumbs/anis/23-summer-no.webp.webp",
      "title": "부정",
      "type": "표정",
      "form": "표정 · 스파클링 서머",
@@ -4713,8 +4713,8 @@
     },
     {
      "id": "anis-24",
-     "file": "assets/anis/24-cut-idle.webp",
-     "thumb": "assets/thumbs/anis/24-cut-idle.webp",
+     "file": "assets/anis/24-star-idle.webp.webp",
+     "thumb": "assets/thumbs/anis/24-star-idle.webp.webp",
      "title": "미소",
      "type": "표정",
      "form": "표정 · 스타",
@@ -4732,8 +4732,8 @@
     },
     {
      "id": "anis-25",
-     "file": "assets/anis/25-cut-angry.webp",
-     "thumb": "assets/thumbs/anis/25-cut-angry.webp",
+     "file": "assets/anis/25-star-angry.webp.webp",
+     "thumb": "assets/thumbs/anis/25-star-angry.webp.webp",
      "title": "분노",
      "type": "표정",
      "form": "표정 · 스타",
@@ -4751,8 +4751,8 @@
     },
     {
      "id": "anis-26",
-     "file": "assets/anis/26-cut-delight.webp",
-     "thumb": "assets/thumbs/anis/26-cut-delight.webp",
+     "file": "assets/anis/26-star-delight.webp.webp",
+     "thumb": "assets/thumbs/anis/26-star-delight.webp.webp",
      "title": "활짝 웃음",
      "type": "표정",
      "form": "표정 · 스타",
@@ -4770,8 +4770,8 @@
     },
     {
      "id": "anis-27",
-     "file": "assets/anis/27-cut-shy.webp",
-     "thumb": "assets/thumbs/anis/27-cut-shy.webp",
+     "file": "assets/anis/27-star-shy.webp.webp",
+     "thumb": "assets/thumbs/anis/27-star-shy.webp.webp",
      "title": "부끄러움",
      "type": "표정",
      "form": "표정 · 스타",
@@ -4789,8 +4789,8 @@
     },
     {
      "id": "anis-28",
-     "file": "assets/anis/28-cut-sad.webp",
-     "thumb": "assets/thumbs/anis/28-cut-sad.webp",
+     "file": "assets/anis/28-star-sad.webp.webp",
+     "thumb": "assets/thumbs/anis/28-star-sad.webp.webp",
      "title": "슬픔",
      "type": "표정",
      "form": "표정 · 스타",
@@ -4808,8 +4808,8 @@
     },
     {
      "id": "anis-29",
-     "file": "assets/anis/29-cut-worry.webp",
-     "thumb": "assets/thumbs/anis/29-cut-worry.webp",
+     "file": "assets/anis/29-star-worry.webp.webp",
+     "thumb": "assets/thumbs/anis/29-star-worry.webp.webp",
      "title": "걱정",
      "type": "표정",
      "form": "표정 · 스타",
@@ -4827,8 +4827,8 @@
     },
     {
      "id": "anis-30",
-     "file": "assets/anis/30-cut-rage.webp",
-     "thumb": "assets/thumbs/anis/30-cut-rage.webp",
+     "file": "assets/anis/30-star-rage.webp.webp",
+     "thumb": "assets/thumbs/anis/30-star-rage.webp.webp",
      "title": "격노",
      "type": "표정",
      "form": "표정 · 스타",
@@ -4846,8 +4846,8 @@
     },
     {
      "id": "anis-31",
-     "file": "assets/anis/31-cut-no.webp",
-     "thumb": "assets/thumbs/anis/31-cut-no.webp",
+     "file": "assets/anis/31-star-no.webp.webp",
+     "thumb": "assets/thumbs/anis/31-star-no.webp.webp",
      "title": "부정",
      "type": "표정",
      "form": "표정 · 스타",
@@ -4865,8 +4865,8 @@
     },
     {
      "id": "anis-32",
-     "file": "assets/anis/32-cut-idle.webp",
-     "thumb": "assets/thumbs/anis/32-cut-idle.webp",
+     "file": "assets/anis/32-starlight-idle.webp.webp",
+     "thumb": "assets/thumbs/anis/32-starlight-idle.webp.webp",
      "title": "미소",
      "type": "표정",
      "form": "표정 · 스타 스타라이트",
@@ -4884,8 +4884,8 @@
     },
     {
      "id": "anis-33",
-     "file": "assets/anis/33-cut-delight.webp",
-     "thumb": "assets/thumbs/anis/33-cut-delight.webp",
+     "file": "assets/anis/33-starlight-delight.webp.webp",
+     "thumb": "assets/thumbs/anis/33-starlight-delight.webp.webp",
      "title": "활짝 웃음",
      "type": "표정",
      "form": "표정 · 스타 스타라이트",
@@ -4903,8 +4903,8 @@
     },
     {
      "id": "anis-34",
-     "file": "assets/anis/34-cut-shy.webp",
-     "thumb": "assets/thumbs/anis/34-cut-shy.webp",
+     "file": "assets/anis/34-starlight-shy.webp.webp",
+     "thumb": "assets/thumbs/anis/34-starlight-shy.webp.webp",
      "title": "부끄러움",
      "type": "표정",
      "form": "표정 · 스타 스타라이트",
@@ -4922,8 +4922,8 @@
     },
     {
      "id": "anis-35",
-     "file": "assets/anis/35-cut-angry.webp",
-     "thumb": "assets/thumbs/anis/35-cut-angry.webp",
+     "file": "assets/anis/35-starlight-angry.webp.webp",
+     "thumb": "assets/thumbs/anis/35-starlight-angry.webp.webp",
      "title": "분노",
      "type": "표정",
      "form": "표정 · 스타 스타라이트",
