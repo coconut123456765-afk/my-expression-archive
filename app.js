@@ -758,8 +758,8 @@
       for (var i = 0; i < ids.length; i++) {
         var it = itemById(c, ids[i]);
         if (!it) continue;
-        var r = await fetch(it.file);
-        var buf = new Uint8Array(await r.arrayBuffer());
+        var png = await fileAsPngBlob(it);
+        var buf = new Uint8Array(await png.arrayBuffer());
         files.push({ name: String(i + 1).padStart(2, "0") + "_" + safeFileName(it.title) + ".png", data: buf });
       }
       var blob = buildZip(files);
